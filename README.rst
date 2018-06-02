@@ -16,7 +16,7 @@ Installation
 Kadal is available through pip:
 ::
 
-    pip install -U Kadal
+    pip install -U kadal
 
 
 Example
