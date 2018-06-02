@@ -40,7 +40,7 @@ class Client:
         return asks.Session()
 
     async def _request(self, query, **variables):
-        return await self.lib.post(URL, json={"query": query, "variables": variables})
+        return await self._lib.post(URL, json={"query": query, "variables": variables})
 
     @staticmethod
     def handle_error(error):
