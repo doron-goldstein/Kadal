@@ -53,28 +53,40 @@ class Client:
 
     async def get_anime(self, id):
         r = await self._request(BY_ID, id=id, type='ANIME')
-        data = r.json()
+        if self._lib == 'asyncio':
+            data = await r.json()
+        else:
+            data = r.json()
         if data.get('errors'):
             self.handle_error(data['errors'][0])
         return Media(data)
 
     async def get_manga(self, id):
         r = await self._request(BY_ID, id=id, type='MANGA')
-        data = r.json()
+        if self._lib == 'asyncio':
+            data = await r.json()
+        else:
+            data = r.json()
         if data.get('errors'):
             self.handle_error(data['errors'][0])
         return Media(data)
 
     async def search_anime(self, query):
         r = await self._request(SEARCH, search=query, type='ANIME')
-        data = r.json()
+        if self._lib == 'asyncio':
+            data = await r.json()
+        else:
+            data = r.json()
         if data.get('errors'):
             self.handle_error(data['errors'][0])
         return Media(data)
 
     async def search_manga(self, query):
         r = await self._request(SEARCH, search=query, type='MANGA')
-        data = r.json()
+        if self._lib == 'asyncio':
+            data = await r.json()
+        else:
+            data = r.json()
         if data.get('errors'):
             self.handle_error(data['errors'][0])
         return Media(data)
