@@ -1,5 +1,3 @@
-import asks
-
 from kadal.query import SEARCH, BY_ID
 from kadal.media import Media
 
@@ -17,8 +15,29 @@ class MediaNotFound(KadalError):
 
 
 class Client:
-    def __init__(self):
-        self.lib = asks
+    def __init__(self, session=None, *, lib='asyncio', loop=None):
+        if lib not in ('asyncio', 'multio'):
+            raise ValueError("lib must be of type `str` and be either `asyncio` or `multio`, "
+                             "not `{}`".format(lib if isinstance(lib, str) else lib.__class__.__name__))
+        self._lib = lib
+        if lib == 'asyncio':
+            import asyncio
+            loop = loop or asyncio.get_event_loop()
+        self.session = session or self._make_session(lib, loop)
+
+    @staticmethod
+    def _make_session(lib, loop=None):
+        if lib == 'asyncio':
+            try:
+                import aiohttp
+            except ImportError:
+                raise ImportError("To use tokage in asyncio mode, it requires the `aiohttp` module.")
+            return aiohttp.ClientSession(loop=loop)
+        try:
+            import asks
+        except ImportError:
+            raise ImportError("To use tokage in curio/trio mode, it requires the `asks` module.")
+        return asks.Session()
 
     async def _request(self, query, **variables):
         return await self.lib.post(URL, json={"query": query, "variables": variables})
