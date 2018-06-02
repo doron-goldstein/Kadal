@@ -6,7 +6,7 @@ requirements = []
 setup(
     name='Kadal',
     author='SynderBlack',
-    version="0.1.1",
+    version="0.1.2",
     packages=['kadal'],
     license='MIT',
     description='Async wrapper for the Anilist API',
