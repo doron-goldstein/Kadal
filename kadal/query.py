@@ -23,6 +23,7 @@ query ($search: String, $type: MediaType) {
         }
         episodes
         chapters
+        volumes
         coverImage {
             large
         }
