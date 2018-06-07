@@ -31,12 +31,12 @@ class Client:
             try:
                 import aiohttp
             except ImportError:
-                raise ImportError("To use tokage in asyncio mode, it requires the `aiohttp` module.")
+                raise ImportError("To use Kadal in asyncio mode, it requires the `aiohttp` module.")
             return aiohttp.ClientSession(loop=loop)
         try:
             import asks
         except ImportError:
-            raise ImportError("To use tokage in curio/trio mode, it requires the `asks` module.")
+            raise ImportError("To use Kadal in curio/trio mode, it requires the `asks` module.")
         return asks.Session()
 
     async def _request(self, query, **variables):
