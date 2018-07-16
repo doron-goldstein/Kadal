@@ -1,4 +1,4 @@
-from kadal.query import SEARCH, BY_ID
+from kadal.query import MEDIA_SEARCH, MEDIA_BY_ID, MEDIA_PAGED
 from kadal.media import Media
 
 URL = 'https://graphql.anilist.co'
@@ -40,7 +40,21 @@ class Client:
         return asks.Session()
 
     async def _request(self, query, **variables):
-        return await self.session.post(URL, json={"query": query, "variables": variables})
+        r = await self.session.post(URL, json={"query": query, "variables": variables})
+        if self._lib == 'asyncio':
+            data = await r.json()
+        else:
+            data = r.json()
+        if data.get('errors'):
+            self.handle_error(data['errors'][0])
+        return data
+
+    async def _most_popular(self, query, _type):
+        data = await self._request(MEDIA_PAGED, search=query, page=1, perPage=50, type=_type)
+        lst = data['data']['Page']['media']
+        if not lst:
+            raise MediaNotFound("Not Found.", 404)
+        return sorted(lst, key=lambda m: m['popularity'], reverse=True)[0]
 
     @staticmethod
     def handle_error(error):
@@ -52,41 +66,23 @@ class Client:
             raise KadalError(msg, status)
 
     async def get_anime(self, id):
-        r = await self._request(BY_ID, id=id, type='ANIME')
-        if self._lib == 'asyncio':
-            data = await r.json()
-        else:
-            data = r.json()
-        if data.get('errors'):
-            self.handle_error(data['errors'][0])
+        data = await self._request(MEDIA_BY_ID, id=id, type='ANIME')
         return Media(data)
 
     async def get_manga(self, id):
-        r = await self._request(BY_ID, id=id, type='MANGA')
-        if self._lib == 'asyncio':
-            data = await r.json()
-        else:
-            data = r.json()
-        if data.get('errors'):
-            self.handle_error(data['errors'][0])
+        data = await self._request(MEDIA_BY_ID, id=id, type='MANGA')
         return Media(data)
 
-    async def search_anime(self, query):
-        r = await self._request(SEARCH, search=query, type='ANIME')
-        if self._lib == 'asyncio':
-            data = await r.json()
+    async def search_anime(self, query, *, popularity=False):
+        if popularity:
+            data = await self._most_popular(query, "ANIME")
         else:
-            data = r.json()
-        if data.get('errors'):
-            self.handle_error(data['errors'][0])
-        return Media(data)
+            data = await self._request(MEDIA_SEARCH, search=query, type='ANIME')
+        return Media(data, page=popularity)
 
-    async def search_manga(self, query):
-        r = await self._request(SEARCH, search=query, type='MANGA')
-        if self._lib == 'asyncio':
-            data = await r.json()
+    async def search_manga(self, query, *, popularity=False):
+        if popularity:
+            data = await self._most_popular(query, "MANGA")
         else:
-            data = r.json()
-        if data.get('errors'):
-            self.handle_error(data['errors'][0])
-        return Media(data)
+            data = await self._request(MEDIA_SEARCH, search=query, type='MANGA')
+        return Media(data, page=popularity)

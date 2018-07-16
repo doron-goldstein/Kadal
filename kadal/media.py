@@ -29,8 +29,8 @@ class MediaStatus(Enum):
 
 
 class Media:
-    def __init__(self, json):
-        d = json['data']['Media']
+    def __init__(self, json, *, page=False):
+        d = json if page else json['data']['Media']
         d['type'] = MediaType(d['type'])
         d['status'] = MediaStatus(d['status'])
         d['format'] = MediaFormat(d['format'])
