@@ -106,3 +106,35 @@ query ($id: Int, $page: Int, $perPage: Int, $search: String, $type: MediaType) {
   }
 }
 """
+
+USER_SEARCH = """
+query ($search: String) {
+  User(search: $search) {
+    id
+    name
+    html_about: about(asHtml: true)
+    about
+    avatar {
+      large
+    }
+    bannerImage
+    siteUrl
+  }
+}
+"""
+
+USER_BY_ID = """
+query ($id: Int) {
+  User(id: $id) {
+    id
+    name
+    html_about: about(asHtml: true)
+    about
+    avatar {
+      large
+    }
+    bannerImage
+    siteUrl
+  }
+}
+"""

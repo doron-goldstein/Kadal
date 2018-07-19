@@ -1,5 +1,6 @@
-from kadal.query import MEDIA_SEARCH, MEDIA_BY_ID, MEDIA_PAGED
+from kadal.query import MEDIA_SEARCH, MEDIA_BY_ID, MEDIA_PAGED, USER_SEARCH, USER_BY_ID
 from kadal.media import Media
+from kadal.user import User
 
 URL = 'https://graphql.anilist.co'
 
@@ -73,6 +74,10 @@ class Client:
         data = await self._request(MEDIA_BY_ID, id=id, type='MANGA')
         return Media(data)
 
+    async def get_user(self, id):
+        data = await self._request(USER_BY_ID, id=id)
+        return User(data)
+
     async def search_anime(self, query, *, popularity=False):
         if popularity:
             data = await self._most_popular(query, "ANIME")
@@ -86,3 +91,7 @@ class Client:
         else:
             data = await self._request(MEDIA_SEARCH, search=query, type='MANGA')
         return Media(data, page=popularity)
+
+    async def search_user(self, query):
+        data = await self._request(USER_SEARCH, search=query)
+        return User(data)
