@@ -119,6 +119,10 @@ query ($search: String) {
     }
     bannerImage
     siteUrl
+    stats {
+      watchedTime
+      chaptersRead
+    }
   }
 }
 """
@@ -135,6 +139,10 @@ query ($id: Int) {
     }
     bannerImage
     siteUrl
+    stats {
+      watchedTime
+      chaptersRead
+    }
   }
 }
 """
