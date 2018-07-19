@@ -31,9 +31,13 @@ class MediaStatus(Enum):
 class Media:
     def __init__(self, json, *, page=False):
         d = json if page else json['data']['Media']
-        d['type'] = MediaType(d['type'])
-        d['status'] = MediaStatus(d['status'])
-        d['format'] = MediaFormat(d['format'])
-        d['coverImage'] = d['coverImage']['large']
+        if d.get('type'):
+            d['type'] = MediaType(d['type'])
+        if d.get('status'):
+            d['status'] = MediaStatus(d['status'])
+        if d.get('format'):
+            d['format'] = MediaFormat(d['format'])
+        if d.get('coverImage'):
+            d['coverImage'] = d['coverImage']['large']
         for k, v in d.items():
             setattr(self, camel2snake(k), v)
