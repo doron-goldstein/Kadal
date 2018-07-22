@@ -1,6 +1,9 @@
+from typing import Union
+
 from kadal.query import MEDIA_SEARCH, MEDIA_BY_ID, MEDIA_PAGED, USER_SEARCH, USER_BY_ID
 from kadal.media import Media
 from kadal.user import User
+
 
 URL = 'https://graphql.anilist.co'
 
@@ -27,7 +30,7 @@ class Client:
         self.session = session or self._make_session(lib, loop)
 
     @staticmethod
-    def _make_session(lib, loop=None):
+    def _make_session(lib, loop=None) -> Union['aiohttp.ClientSession', 'asks.Session']:
         if lib == 'asyncio':
             try:
                 import aiohttp
@@ -40,7 +43,7 @@ class Client:
             raise ImportError("To use Kadal in curio/trio mode, it requires the `asks` module.")
         return asks.Session()
 
-    async def _request(self, query, **variables):
+    async def _request(self, query, **variables) -> dict:
         r = await self.session.post(URL, json={"query": query, "variables": variables})
         if self._lib == 'asyncio':
             data = await r.json()
@@ -50,7 +53,7 @@ class Client:
             self.handle_error(data['errors'][0])
         return data
 
-    async def _most_popular(self, query, _type):
+    async def _most_popular(self, query, _type) -> dict:
         data = await self._request(MEDIA_PAGED, search=query, page=1, perPage=50, type=_type)
         lst = data['data']['Page']['media']
         if not lst:
@@ -66,32 +69,32 @@ class Client:
         else:
             raise KadalError(msg, status)
 
-    async def get_anime(self, id):
+    async def get_anime(self, id) -> Media:
         data = await self._request(MEDIA_BY_ID, id=id, type='ANIME')
         return Media(data)
 
-    async def get_manga(self, id):
+    async def get_manga(self, id) -> Media:
         data = await self._request(MEDIA_BY_ID, id=id, type='MANGA')
         return Media(data)
 
-    async def get_user(self, id):
+    async def get_user(self, id) -> User:
         data = await self._request(USER_BY_ID, id=id)
         return User(data)
 
-    async def search_anime(self, query, *, popularity=False):
+    async def search_anime(self, query, *, popularity=False) -> Media:
         if popularity:
             data = await self._most_popular(query, "ANIME")
         else:
             data = await self._request(MEDIA_SEARCH, search=query, type='ANIME')
         return Media(data, page=popularity)
 
-    async def search_manga(self, query, *, popularity=False):
+    async def search_manga(self, query, *, popularity=False) -> Media:
         if popularity:
             data = await self._most_popular(query, "MANGA")
         else:
             data = await self._request(MEDIA_SEARCH, search=query, type='MANGA')
         return Media(data, page=popularity)
 
-    async def search_user(self, query):
+    async def search_user(self, query) -> User:
         data = await self._request(USER_SEARCH, search=query)
         return User(data)
