@@ -1,6 +1,17 @@
 from enum import Enum
+from datetime import timedelta
 
 from kadal.utils import camel2snake
+
+
+class Airing:
+    def __init__(self, data):
+        self._seconds_until: int = data.get("timeUntilAiring")
+        self.episode: int = data.get("episode")
+
+    @property
+    def time_until(self):
+        return timedelta(seconds=self._seconds_until)
 
 
 class MediaType(Enum):
@@ -39,5 +50,7 @@ class Media:
             d['format'] = MediaFormat(d['format'])
         if d.get('coverImage'):
             d['coverImage'] = d['coverImage']['large']
+        if d.get('nextAiringEpisode'):
+            d['airing'] = Airing(d['nextAiringEpisode'])
         for k, v in d.items():
             setattr(self, camel2snake(k), v)

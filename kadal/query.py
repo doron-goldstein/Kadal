@@ -30,6 +30,10 @@ query ($search: String, $type: MediaType) {
     genres
     averageScore
     siteUrl
+    nextAiringEpisode {
+      timeUntilAiring
+      episode
+    }
   }
 }
 """
@@ -64,6 +68,11 @@ query ($id: Int, $type: MediaType) {
     }
     genres
     averageScore
+    siteUrl
+    nextAiringEpisode {
+      timeUntilAiring
+      episode
+    }
   }
 }
 """
