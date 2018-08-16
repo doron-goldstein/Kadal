@@ -5,8 +5,9 @@ query ($search: String, $type: MediaType) {
     type
     format
     title {
-      native
       english
+      romaji
+      native
     }
     synonyms
     status
@@ -45,8 +46,9 @@ query ($id: Int, $type: MediaType) {
     type
     format
     title {
-      native
       english
+      romaji
+      native
     }
     synonyms
     status
@@ -85,8 +87,9 @@ query ($id: Int, $page: Int, $perPage: Int, $search: String, $type: MediaType) {
       type
       format
       title {
-        native
         english
+        romaji
+        native
       }
       synonyms
       status
