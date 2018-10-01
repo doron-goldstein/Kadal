@@ -21,4 +21,25 @@ Kadal is available through pip:
 
 Example
 -------
-To be added soon.
+
+.. code-block:: python3
+
+    import multio
+    import kadal
+    
+    multio.init("curio")  # tell multio which async lib to use
+
+    async def main():
+        k = kadal.Client()  # Create a new Client instance
+        
+        anime = await k.search_anime("rezero")  # search for an anime by title
+        # alternatively, you can use an id with k.get_anime(id)
+        
+        print("Anime title: {}".format(anime.title))  # Print the title of the Anime
+
+    multio.run(main())  # run main using multio (in this case, directing to curio)
+
+Prints:
+::
+
+    Anime title: Re:Zero kara Hajimeru Isekai Seikatsu
