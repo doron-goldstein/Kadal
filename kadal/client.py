@@ -58,7 +58,7 @@ class Client:
         lst = data['data']['Page']['media']
         if not lst:
             raise MediaNotFound("Not Found.", 404)
-        return sorted(lst, key=lambda m: m['popularity'], reverse=True)[0]
+        return lst
 
     @staticmethod
     def handle_error(error):
@@ -83,14 +83,14 @@ class Client:
 
     async def search_anime(self, query, *, popularity=False) -> Media:
         if popularity:
-            data = await self._most_popular(query, "ANIME")
+            data = (await self._most_popular(query, "ANIME"))[0]
         else:
             data = await self._request(MEDIA_SEARCH, search=query, type='ANIME')
         return Media(data, page=popularity)
 
     async def search_manga(self, query, *, popularity=False) -> Media:
         if popularity:
-            data = await self._most_popular(query, "MANGA")
+            data = (await self._most_popular(query, "MANGA"))[0]
         else:
             data = await self._request(MEDIA_SEARCH, search=query, type='MANGA')
         return Media(data, page=popularity)
