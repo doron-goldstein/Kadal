@@ -80,9 +80,16 @@ query ($id: Int, $type: MediaType) {
 """
 
 MEDIA_PAGED = """
-query ($id: Int, $page: Int, $perPage: Int, $search: String, $type: MediaType) {
+query (
+  $id: Int,
+  $page: Int,
+  $perPage: Int,
+  $search: String,
+  $type: MediaType,
+  $sort: [MediaSort] = [SCORE_DESC, POPULARITY_DESC]
+) {
   Page(page: $page, perPage: $perPage) {
-    media(id: $id, search: $search, type: $type) {
+    media(id: $id, search: $search, type: $type, sort: $sort) {
       id
       type
       format
