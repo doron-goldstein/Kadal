@@ -53,8 +53,8 @@ class Client:
             self.handle_error(data['errors'][0])
         return data
 
-    async def _most_popular(self, query, _type) -> dict:
-        data = await self._request(MEDIA_PAGED, search=query, page=1, perPage=50, type=_type)
+    async def _most_popular(self, query, _type, *, exclude=None) -> dict:
+        data = await self._request(MEDIA_PAGED, search=query, page=1, perPage=50, type=_type, exclude=exclude)
         lst = data['data']['Page']['media']
         if not lst:
             raise MediaNotFound("Not Found.", 404)
@@ -83,16 +83,17 @@ class Client:
 
     async def search_anime(self, query, *, popularity=False) -> Media:
         if popularity:
-            data = (await self._most_popular(query, "ANIME"))[0]
+            data = (await self._most_popular(query, _type="ANIME"))[0]
         else:
             data = await self._request(MEDIA_SEARCH, search=query, type='ANIME')
         return Media(data, page=popularity)
 
-    async def search_manga(self, query, *, popularity=False) -> Media:
+    async def search_manga(self, query, *, popularity=False, include_novels=False) -> Media:
+        exclude = "NOVEL" if not include_novels else None
         if popularity:
-            data = (await self._most_popular(query, "MANGA"))[0]
+            data = (await self._most_popular(query, _type="MANGA", exclude=exclude))[0]
         else:
-            data = await self._request(MEDIA_SEARCH, search=query, type='MANGA')
+            data = await self._request(MEDIA_SEARCH, search=query, type='MANGA', exclude=exclude)
         return Media(data, page=popularity)
 
     async def search_user(self, query) -> User:
