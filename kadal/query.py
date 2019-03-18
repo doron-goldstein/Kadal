@@ -86,7 +86,7 @@ query (
   $perPage: Int,
   $search: String,
   $type: MediaType,
-  $sort: [MediaSort] = [SCORE_DESC, POPULARITY_DESC],
+  $sort: [MediaSort] = [SEARCH_MATCH],
   $exclude: MediaFormat
 ) {
   Page(page: $page, perPage: $perPage) {
