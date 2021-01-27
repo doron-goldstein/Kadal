@@ -49,6 +49,7 @@ class Media:
         if d.get('format'):
             d['format'] = MediaFormat(d['format'])
         if d.get('coverImage'):
+            d['coverColor'] = d['coverImage']['color']
             d['coverImage'] = d['coverImage']['large']
         if d.get('nextAiringEpisode'):
             d['airing'] = Airing(d['nextAiringEpisode'])

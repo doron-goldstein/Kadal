@@ -27,7 +27,9 @@ query ($search: String, $type: MediaType, $exclude: MediaFormat) {
     volumes
     coverImage {
       large
+      color
     }
+    bannerImage
     genres
     averageScore
     siteUrl
@@ -67,7 +69,9 @@ query ($id: Int, $type: MediaType) {
     chapters
     coverImage {
       large
+      color
     }
+    bannerImage
     genres
     averageScore
     siteUrl
@@ -117,7 +121,9 @@ query (
       volumes
       coverImage {
         large
+        color
       }
+      bannerImage
       genres
       averageScore
       siteUrl
