@@ -5,3 +5,4 @@ examples/
 __pycache__/
 .flake8
 .idea/
+upload.sh
