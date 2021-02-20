@@ -81,12 +81,13 @@ class Client:
         data = await self._request(USER_BY_ID, id=id)
         return User(data)
 
-    async def search_anime(self, query, *, popularity=False, allow_adult=True) -> Media:
+    async def search_anime(self, query, *, popularity=False, allow_adult=False) -> Media:
         variables = {
             "search": query,
             "type": "ANIME",
-            "isAdult": allow_adult
         }
+        if not allow_adult:
+            variables['isAdult'] = False
 
         if popularity:
             data = (await self._most_popular(query, **variables))[0]
@@ -94,14 +95,16 @@ class Client:
             data = await self._request(MEDIA_SEARCH, **variables)
         return Media(data, page=popularity)
 
-    async def search_manga(self, query, *, popularity=False, include_novels=False, allow_adult=True) -> Media:
+    async def search_manga(self, query, *, popularity=False, include_novels=False, allow_adult=False) -> Media:
         exclude = "NOVEL" if not include_novels else None
         variables = {
             "search": query,
             "type": "MANGA",
             "exclude": exclude,
-            "isAdult": allow_adult
         }
+        if not allow_adult:
+            variables['isAdult'] = False
+
         if popularity:
             data = (await self._most_popular(query, **variables))[0]
         else:
