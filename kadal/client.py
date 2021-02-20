@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from kadal.query import MEDIA_SEARCH, MEDIA_BY_ID, MEDIA_PAGED, USER_SEARCH, USER_BY_ID
 from kadal.media import Media
@@ -53,8 +53,8 @@ class Client:
             self.handle_error(data['errors'][0])
         return data
 
-    async def _most_popular(self, query, _type, *, exclude=None) -> dict:
-        data = await self._request(MEDIA_PAGED, search=query, page=1, perPage=50, type=_type, exclude=exclude)
+    async def _most_popular(self, query, **variables) -> List[dict]:
+        data = await self._request(MEDIA_PAGED, page=1, perPage=50, **variables)
         lst = data['data']['Page']['media']
         if not lst:
             raise MediaNotFound("Not Found.", 404)
@@ -81,19 +81,31 @@ class Client:
         data = await self._request(USER_BY_ID, id=id)
         return User(data)
 
-    async def search_anime(self, query, *, popularity=False) -> Media:
+    async def search_anime(self, query, *, popularity=False, allow_adult=True) -> Media:
+        variables = {
+            "search": query,
+            "type": "ANIME",
+            "isAdult": allow_adult
+        }
+
         if popularity:
-            data = (await self._most_popular(query, _type="ANIME"))[0]
+            data = (await self._most_popular(query, **variables))[0]
         else:
-            data = await self._request(MEDIA_SEARCH, search=query, type='ANIME')
+            data = await self._request(MEDIA_SEARCH, **variables)
         return Media(data, page=popularity)
 
-    async def search_manga(self, query, *, popularity=False, include_novels=False) -> Media:
+    async def search_manga(self, query, *, popularity=False, include_novels=False, allow_adult=True) -> Media:
         exclude = "NOVEL" if not include_novels else None
+        variables = {
+            "search": query,
+            "type": "MANGA",
+            "exclude": exclude,
+            "isAdult": allow_adult
+        }
         if popularity:
-            data = (await self._most_popular(query, _type="MANGA", exclude=exclude))[0]
+            data = (await self._most_popular(query, **variables))[0]
         else:
-            data = await self._request(MEDIA_SEARCH, search=query, type='MANGA', exclude=exclude)
+            data = await self._request(MEDIA_SEARCH, **variables)
         return Media(data, page=popularity)
 
     async def search_user(self, query) -> User:

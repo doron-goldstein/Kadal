@@ -1,6 +1,6 @@
 MEDIA_SEARCH = """
-query ($search: String, $type: MediaType, $exclude: MediaFormat) {
-  Media(search: $search, type: $type, format_not: $exclude) {
+query ($search: String, $type: MediaType, $exclude: MediaFormat, $isAdult: Boolean) {
+  Media(search: $search, type: $type, format_not: $exclude, isAdult: $isAdult) {
     id
     type
     format
@@ -91,10 +91,11 @@ query (
   $search: String,
   $type: MediaType,
   $sort: [MediaSort] = [SEARCH_MATCH],
-  $exclude: MediaFormat
+  $exclude: MediaFormat,
+  $isAdult: Boolean
 ) {
   Page(page: $page, perPage: $perPage) {
-    media(id: $id, search: $search, type: $type, sort: $sort, format_not: $exclude) {
+    media(id: $id, search: $search, type: $type, sort: $sort, format_not: $exclude, isAdult: $isAdult) {
       id
       type
       format
